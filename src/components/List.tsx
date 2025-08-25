@@ -38,15 +38,18 @@ function List() {
                 {Object.entries(items).map(([id, data]) =>{
                     const itemId = Number(id);
                     return(
-                    <ListItem 
-                        data={data} 
-                        onEdit={
-                            (newVal) => {
-                                items[itemId] = newVal;
-                                setItems(items);
-                            }
-                        }   
-                    />
+                        <ListItem 
+                            key={itemId}
+                            data={data} 
+                            onEdit={
+                                (newVal) => {
+                                    setItems(prev => ({
+                                        ...prev,
+                                        [itemId]: newVal
+                                    }));
+                                }
+                            }   
+                        />
                     );
                 }
                 )
