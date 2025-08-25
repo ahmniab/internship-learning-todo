@@ -11,9 +11,11 @@ function useLocalStorage<T>(key:string, initialValue:T)
         return initialValue;
         }
     });
+    
     useEffect(() => {
         try {
             window.localStorage.setItem(key, JSON.stringify(value));
+            console.log('saved');
         } catch (error) {
             console.error('Error can\'t writ to localStorage');
         }
