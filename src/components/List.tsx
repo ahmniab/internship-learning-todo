@@ -46,7 +46,7 @@ function ListItem(props:ListItemProps){
 }
 type TodoList = Record<number, string>;
 function List() { 
-    const [items, setItems] = useLocalStorage<TodoList>('Todo-data',{1:"thing1", 2:"thing2", 3:"thing3"});
+    const [items, setItems] = useLocalStorage<TodoList>('Todo-data',{});
     const [nextKey, setNextKey] = useLocalStorage<number>('Todo-next-key',4);
     const [newTodo, setNewTodo] = useState<string>('');
     return(
