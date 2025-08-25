@@ -1,11 +1,7 @@
 import { useState } from "react";
 import  useLocalStorage from "../hooks/useLocalStorage"
+import { ListItemProps, TodoList } from "../types/types";
 
-type ListItemProps = {
-    onEdit: (newVal:string) => void, 
-    onDelete: () => void;
-    data:string
-}
 function ListItem(props:ListItemProps){
     const [editing, setEditing] = useState<boolean>(false);
     let [labelData, setLableData] = useState<string>(props.data);
@@ -44,7 +40,6 @@ function ListItem(props:ListItemProps){
     );
 
 }
-type TodoList = Record<number, string>;
 function List() { 
     const [items, setItems] = useLocalStorage<TodoList>('Todo-data',{});
     const [nextKey, setNextKey] = useLocalStorage<number>('Todo-next-key',4);
