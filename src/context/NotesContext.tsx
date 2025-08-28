@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useContext, useState } from "react";
+import { ReactNode, createContext, useContext } from "react";
 import { Note, NotesContext, NotesResult, NoteResult, WriteResponse } from "../types/types";
 import { notesEndPoint, searchEndPoint } from '../utilities/Config'
 import axios from 'axios'
@@ -54,44 +54,35 @@ const saveNote = async (note: Note): Promise<Note> => {
 };
 
 export function NotesProvider({children}:{children:ReactNode}) {
-    const [searchKey, setSearchKey] = useState<string>('');
-    const [noteId, setNoteId] = useState<number>(0);
-    const queryClient = useQueryClient();
-
-    const notesResult = useQuery({
-        queryKey: [`notes`, searchKey],
-        queryFn: () => searchNotes(searchKey)
-    })
-    const noteResult = useQuery({
-        queryKey: [`note`, noteId],
-        queryFn: () => fetchNote(noteId)
-    })
-
-    const {error, isError, isPending, isSuccess, data, mutate } = useMutation({ mutationFn: saveNote, onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notes'] });
-    }})
-
-    const useGetNotes = (searchKey:string):NotesResult =>
-    {
-        setSearchKey(searchKey);
+    const useGetNotes = (searchKey:string):NotesResult =>{
+        const notesResult = useQuery({
+            queryKey: [`notes`, searchKey],
+            queryFn: () => searchNotes(searchKey)
+        })
         return {
-                data: notesResult.data,
-                isPending: notesResult.isPending,
-                isError: notesResult.isError,
-                error: notesResult.error
-            }
+            data: notesResult.data,
+            isPending: notesResult.isPending,
+            isError: notesResult.isError,
+            error: notesResult.error
+        }
     }
-    const useGetNote = (id:number):NoteResult =>
-    {
-        setNoteId(id);
+    const useGetNote = (id:number):NoteResult =>{
+        const noteResult = useQuery({
+            queryKey: [`note`, id],
+            queryFn: () => fetchNote(id)
+        })
         return {
-                data: noteResult.data,
-                isPending: noteResult.isPending,
-                isError: noteResult.isError,
-                error: noteResult.error
-            }
+            data: noteResult.data,
+            isPending: noteResult.isPending,
+            isError: noteResult.isError,
+            error: noteResult.error
+        }
     }
-    const writeNote = ():WriteResponse => {
+    const useWriteNote = ():WriteResponse => {
+        const queryClient = useQueryClient();
+        const {error, isError, isPending, isSuccess, data, mutate } = useMutation({ mutationFn: saveNote, onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['notes'] });
+        }})
         return {
             note:data,
             isSuccess:isSuccess,
@@ -105,7 +96,7 @@ export function NotesProvider({children}:{children:ReactNode}) {
         <notesContext.Provider value={{
             useGetNotes: useGetNotes,
             useGetNote : useGetNote ,
-            useWriteNote:writeNote
+            useWriteNote:useWriteNote
         }}>
         {children}
         </notesContext.Provider>
